@@ -16,6 +16,8 @@
 
 package com.genymobile.gnirehtet;
 
+import com.genymobile.gnirehtet.relay.Log;
+
 /**
  * Simple specific command-line arguments parser.
  */
@@ -27,13 +29,15 @@ public class CommandLineArguments {
     public static final int PARAM_DNS_SERVER = 1 << 1;
     public static final int PARAM_ROUTES = 1 << 2;
     public static final int PARAM_PORT = 1 << 3;
-
+    public static final int PARAM_LOG_LEVEL = 1 << 4;
     public static final int DEFAULT_PORT = 31416;
+    public static final Log.Level DEFAULT_LOG_LEVEL = Log.Level.INFO;
 
     private int port;
     private String serial;
     private String dnsServers;
     private String routes;
+    private Log.Level logLevel;
 
     public static CommandLineArguments parse(int acceptedParameters, String... args) {
         CommandLineArguments arguments = new CommandLineArguments();
@@ -69,6 +73,13 @@ public class CommandLineArguments {
                     throw new IllegalArgumentException("Invalid port: " + arguments.port);
                 }
                 ++i;
+            } else if ((acceptedParameters & PARAM_LOG_LEVEL) != 0 && "-l".equals(arg)) {
+                try {
+                    arguments.logLevel = Log.Level.valueOf(args[i + 1]);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Unexpected argument for log level: \"" + arg + "\"");
+                }
+                ++i;
             } else if ((acceptedParameters & PARAM_SERIAL) != 0 && arguments.serial == null) {
                 arguments.serial = arg;
             } else {
@@ -77,6 +88,9 @@ public class CommandLineArguments {
         }
         if (arguments.port == 0) {
             arguments.port = DEFAULT_PORT;
+        }
+        if (null == arguments.logLevel) {
+            arguments.logLevel = DEFAULT_LOG_LEVEL;
         }
         return arguments;
     }
@@ -95,5 +109,9 @@ public class CommandLineArguments {
 
     public int getPort() {
         return port;
+    }
+
+    public Log.Level getLogLevel() {
+        return logLevel;
     }
 }

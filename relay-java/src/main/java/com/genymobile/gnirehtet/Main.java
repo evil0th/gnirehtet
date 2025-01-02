@@ -87,7 +87,7 @@ public final class Main {
             }
         },
         RUN("run", CommandLineArguments.PARAM_SERIAL | CommandLineArguments.PARAM_DNS_SERVER | CommandLineArguments.PARAM_ROUTES
-                | CommandLineArguments.PARAM_PORT) {
+                | CommandLineArguments.PARAM_PORT | CommandLineArguments.PARAM_LOG_LEVEL) {
             @Override
             String getDescription() {
                 return "Enable reverse tethering for exactly one device:\n"
@@ -102,7 +102,8 @@ public final class Main {
                 cmdRun(args.getSerial(), args.getDnsServers(), args.getRoutes(), args.getPort());
             }
         },
-        AUTORUN("autorun", CommandLineArguments.PARAM_DNS_SERVER | CommandLineArguments.PARAM_ROUTES | CommandLineArguments.PARAM_PORT) {
+        AUTORUN("autorun", CommandLineArguments.PARAM_DNS_SERVER | CommandLineArguments.PARAM_ROUTES | CommandLineArguments.PARAM_PORT
+                | CommandLineArguments.PARAM_LOG_LEVEL) {
             @Override
             String getDescription() {
                 return "Enable reverse tethering for all devices:\n"
@@ -116,7 +117,7 @@ public final class Main {
             }
         },
         START("start", CommandLineArguments.PARAM_SERIAL | CommandLineArguments.PARAM_DNS_SERVER | CommandLineArguments.PARAM_ROUTES
-                | CommandLineArguments.PARAM_PORT) {
+                | CommandLineArguments.PARAM_PORT | CommandLineArguments.PARAM_LOG_LEVEL) {
             @Override
             String getDescription() {
                 return "Start a client on the Android device and exit.\n"
@@ -138,7 +139,8 @@ public final class Main {
                 cmdStart(args.getSerial(), args.getDnsServers(), args.getRoutes(), args.getPort());
             }
         },
-        AUTOSTART("autostart", CommandLineArguments.PARAM_DNS_SERVER | CommandLineArguments.PARAM_ROUTES | CommandLineArguments.PARAM_PORT) {
+        AUTOSTART("autostart", CommandLineArguments.PARAM_DNS_SERVER | CommandLineArguments.PARAM_ROUTES | CommandLineArguments.PARAM_PORT
+                | CommandLineArguments.PARAM_LOG_LEVEL) {
             @Override
             String getDescription() {
                 return "Listen for device connexions and start a client on every detected\n"
@@ -166,7 +168,7 @@ public final class Main {
             }
         },
         RESTART("restart", CommandLineArguments.PARAM_SERIAL | CommandLineArguments.PARAM_DNS_SERVER | CommandLineArguments.PARAM_ROUTES
-                | CommandLineArguments.PARAM_PORT) {
+                | CommandLineArguments.PARAM_PORT | CommandLineArguments.PARAM_LOG_LEVEL) {
             @Override
             String getDescription() {
                 return "Stop then start.";
@@ -177,7 +179,7 @@ public final class Main {
                 cmdRestart(args.getSerial(), args.getDnsServers(), args.getRoutes(), args.getPort());
             }
         },
-        TUNNEL("tunnel", CommandLineArguments.PARAM_SERIAL | CommandLineArguments.PARAM_PORT) {
+        TUNNEL("tunnel", CommandLineArguments.PARAM_SERIAL | CommandLineArguments.PARAM_PORT | CommandLineArguments.PARAM_LOG_LEVEL) {
             @Override
             String getDescription() {
                 return "Set up the 'adb reverse' tunnel.\n"
@@ -191,7 +193,7 @@ public final class Main {
                 cmdTunnel(args.getSerial(), args.getPort());
             }
         },
-        RELAY("relay", CommandLineArguments.PARAM_PORT) {
+        RELAY("relay", CommandLineArguments.PARAM_PORT | CommandLineArguments.PARAM_LOG_LEVEL) {
             @Override
             String getDescription() {
                 return "Start the relay server in the current terminal.";
@@ -412,6 +414,9 @@ public final class Main {
         if ((command.acceptedParameters & CommandLineArguments.PARAM_ROUTES) != 0) {
             builder.append(" [-r ROUTE[,ROUTE2,...]]");
         }
+        if ((command.acceptedParameters & CommandLineArguments.PARAM_LOG_LEVEL) != 0) {
+            builder.append(" [-l INFO, VERBOSE, DEBUG, WARNING, ERROR]");
+        }
         builder.append(NL);
         String[] descLines = command.getDescription().split("\n");
         for (String descLine : descLines) {
@@ -422,7 +427,7 @@ public final class Main {
     private static void printCommandUsage(Command command) {
         StringBuilder builder = new StringBuilder();
         appendCommandUsage(builder, command);
-        System.err.print(builder.toString());
+        System.err.print(builder);
     }
 
     public static void main(String... args) throws Exception {
@@ -445,7 +450,7 @@ public final class Main {
                     printCommandUsage(command);
                     return;
                 }
-
+                Log.setThreshold(arguments.getLogLevel());
                 command.execute(arguments);
                 return;
             }

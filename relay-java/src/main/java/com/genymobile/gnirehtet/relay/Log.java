@@ -23,7 +23,7 @@ import java.util.Date;
 
 public final class Log {
 
-    enum Level {
+    public enum Level {
         VERBOSE("V"),
         DEBUG("D"),
         INFO("I"),
