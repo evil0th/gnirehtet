@@ -1,29 +1,29 @@
-task debug(type: Exec) {
+tasks.register('debug', Exec) {
     commandLine 'cargo', 'build'
 }
 
-task release(type: Exec) {
+tasks.register('release', Exec) {
     commandLine 'cargo', 'build', '--release'
 }
 
-task test(type: Exec) {
+tasks.register('test', Exec) {
     commandLine 'cargo', 'test'
 }
 
-task install(type: Exec) {
+tasks.register('install', Exec) {
     commandLine 'cargo', 'install'
 }
 
-task clean(type: Exec) {
+tasks.register('clean', Exec) {
     commandLine 'cargo', 'clean'
 }
 
-task checkstyle(type: Exec) {
+tasks.register('checkstyle', Exec) {
     commandLine 'cargo', 'fmt', '--', '--check'
 }
 
-task check(dependsOn: ['checkstyle', 'test'])
-task build(dependsOn: ['check', 'debug', 'release'])
+tasks.register('check') { dependsOn('checkstyle', 'test') }
+tasks.register('build') { dependsOn('check', 'debug', 'release') }
 
 // Requirements:
 //
@@ -35,6 +35,6 @@ task build(dependsOn: ['check', 'debug', 'release'])
 //   [target.x86_64-pc-windows-gnu]
 //   linker = "x86_64-w64-mingw32-gcc"
 //   ar = "x86_64-w64-mingw32-gcc-ar"
-task releaseCrossToWindows(type: Exec) {
+tasks.register('releaseCrossToWindows', Exec) {
     commandLine 'cargo', 'build', '--release', '--target=x86_64-pc-windows-gnu'
 }

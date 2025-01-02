@@ -70,7 +70,7 @@ public class TestIPPacketOutputSteam {
         Assert.assertEquals("Complete packet should be written", 32, bos.size());
 
         byte[] result = bos.toByteArray();
-        Assert.assertTrue("Resulting array must be identical", Arrays.equals(rawPacket, result));
+        Assert.assertArrayEquals("Resulting array must be identical", rawPacket, result);
     }
 
     @Test
